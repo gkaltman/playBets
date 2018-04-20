@@ -11,7 +11,6 @@ public class CustomerSessionService {
     private Set<Integer> customersWithSession = new HashSet<>();
     private SessionExpirationService sessionExpirationService = new SessionExpirationService();
 
-
     public void start() {
         sessionExpirationService.start();
     }
@@ -43,6 +42,9 @@ public class CustomerSessionService {
 
     }
 
+    /**
+     * @return Id of the customer associated with the session key. <code>Optional.empty</code> if session key does not exist.
+     */
     public Optional<Integer> getCustomerId(String sessionKey) {
 
         synchronized (this) {
