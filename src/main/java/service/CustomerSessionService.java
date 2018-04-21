@@ -39,11 +39,11 @@ public class CustomerSessionService {
         }
 
         sessionExpirationService.addNewSession(session);
-
     }
 
     /**
-     * @return Id of the customer associated with the session key. <code>Optional.empty</code> if session key does not exist.
+     * @return Id of the customer associated with the session key.
+     * Returns <code>Optional.empty</code> if session key does not exist.
      */
     public Optional<Integer> getCustomerId(String sessionKey) {
 
@@ -53,6 +53,14 @@ public class CustomerSessionService {
             } else {
                 return Optional.empty();
             }
+        }
+    }
+
+    private void handleExpiredSession(CustomerSession expiredSession) {
+
+        synchronized (this) {
+            CustomerSession customerSession = sessionKeyToSession.remove(expiredSession.getSessionKey());
+            customersWithSession.remove(customerSession.getCustomerId());
         }
     }
 
@@ -67,14 +75,11 @@ public class CustomerSessionService {
                 while (true) {
                     try {
                         CustomerSession expiredSession = expiringSessionQueue.take();
-
-                        synchronized (CustomerSessionService.this) {
-                            CustomerSession customerSession = sessionKeyToSession.remove(expiredSession.getSessionKey());
-                            customersWithSession.remove(customerSession.getCustomerId());
-                        }
-
+                        handleExpiredSession(expiredSession);
                     } catch (InterruptedException ignore) {
-
+                        break;
+                    } catch (Throwable t) {
+                        //we choose just to log the exception and keep running.
                     }
                 }
             });

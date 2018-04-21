@@ -1,35 +1,26 @@
 package model;
 
-import service.CustomerSessionService;
+import util.StringUtil;
 
-import java.util.UUID;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 
-public class CustomerSession implements Delayed{
+public class CustomerSession implements Delayed {
 
     private final String sessionKey;
     private final int customerId;
     private final long expirationTimeInMs;
-
     private int timeToLiveInMin = 10;
 
     public CustomerSession(int customerId) {
 
-        this.sessionKey = generateSessionKey();
+        this.sessionKey = StringUtil.generateRandomAlphaNumericString();
         this.customerId = customerId;
         this.expirationTimeInMs = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(timeToLiveInMin);
     }
 
-    private String generateSessionKey() {
-
-        //the session key must have only digits and letters. (see spec)
-        return UUID.randomUUID().toString().replaceAll("-", "");
-    }
-
     /**
-     *
      * @return Id of the customer to which this session belongs to.
      */
     public int getCustomerId() {
@@ -58,7 +49,7 @@ public class CustomerSession implements Delayed{
             return +1;
         }
 
-        //if the sessions expire in the same time, order them by session key to have a correct implementation for comparareTo.
+        //if two sessions expire in the same time, order them by sessionKey to have a correct implementation for comparareTo.
         return this.sessionKey.compareTo(other.sessionKey);
     }
 }
