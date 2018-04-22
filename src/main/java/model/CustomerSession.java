@@ -11,13 +11,13 @@ public class CustomerSession implements Delayed {
     private final String sessionKey;
     private final int customerId;
     private final long expirationTimeInMs;
-    private int timeToLiveInMin = 10;
+    private long timeToLiveInMs = TimeUnit.MINUTES.toMillis(10);
 
     public CustomerSession(int customerId) {
 
         this.sessionKey = StringUtil.generateRandomAlphaNumericString();
         this.customerId = customerId;
-        this.expirationTimeInMs = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(timeToLiveInMin);
+        this.expirationTimeInMs = System.currentTimeMillis() + timeToLiveInMs;
     }
 
     /**
@@ -51,5 +51,10 @@ public class CustomerSession implements Delayed {
 
         //if two sessions expire in the same time, order them by sessionKey to have a correct implementation for comparareTo.
         return this.sessionKey.compareTo(other.sessionKey);
+    }
+
+    public void setTimeToLiveInMs(long timeToLiveInMs) {
+
+        this.timeToLiveInMs = timeToLiveInMs;
     }
 }

@@ -26,4 +26,13 @@ public class Stake {
     public int getStake() {
         return stake;
     }
+
+    @Override
+    public String toString() {
+        return "Stake{" +
+                "betOfferId=" + betOfferId +
+                ", customerId=" + customerId +
+                ", stake=" + stake +
+                '}';
+    }
 }
