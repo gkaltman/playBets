@@ -25,7 +25,7 @@ public class CustomerSessionService {
      * @return The session key.
      * @throws IllegalArgumentException if the specified customer has already a session.
      */
-    public void createSession(int customerId) {
+    public String createSession(int customerId) {
 
         if (customersWithSession.contains(customerId)) {
             throw new IllegalArgumentException("Customer " + customerId + " already has an associated session");
@@ -39,20 +39,18 @@ public class CustomerSessionService {
         }
 
         sessionExpirationService.addNewSession(session);
+        return session.getSessionKey();
     }
 
     /**
      * @return Id of the customer associated with the session key.
-     * Returns <code>Optional.empty</code> if session key does not exist.
+     * Returns <code>null</code> if session key does not exist.
      */
-    public Optional<Integer> getCustomerId(String sessionKey) {
+    public Integer getCustomerId(String sessionKey) {
 
         synchronized (this) {
-            if (sessionKeyToSession.containsKey(sessionKey)) {
-                return Optional.of(sessionKeyToSession.get(sessionKey).getCustomerId());
-            } else {
-                return Optional.empty();
-            }
+            return sessionKeyToSession.containsKey(sessionKey) ?//
+             sessionKeyToSession.get(sessionKey).getCustomerId() :null;
         }
     }
 

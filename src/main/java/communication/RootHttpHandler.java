@@ -1,13 +1,14 @@
 package communication;
 
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import javax.xml.ws.Response;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,60 +18,48 @@ import java.util.regex.Pattern;
 public class RootHttpHandler implements HttpHandler {
 
 
-    public void handle(HttpExchange httpExchange) throws IOException {
+    private RequestExecutorFactory requestExecutorFactory;
+    private static final Logger LOGGER = Logger.getLogger( RootHttpHandler.class.getName() );
 
-        handle0(httpExchange.getRequestMethod(), httpExchange.getRequestURI(), httpExchange.getResponseBody());
-        String response = "All OK";
+    public RootHttpHandler(RequestExecutorFactory requestExecutorFactory) {
 
-        httpExchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, response.getBytes().length);
-        OutputStream os = httpExchange.getResponseBody();
+        this.requestExecutorFactory = requestExecutorFactory;
+    }
+
+    public void handle(HttpExchange httpExchange) {
+
+        RequestExecutor requestExecutor;
         try {
-            os.write(response.getBytes());
-        } finally {
-            os.close();
+            requestExecutor = requestExecutorFactory.getRequestHandler(httpExchange);
+        } catch (Throwable t) {
+            LOGGER.log( Level.SEVERE, t.getMessage(), t);
+            sendResponse(httpExchange, new Response("", HttpURLConnection.HTTP_INTERNAL_ERROR));
+            return;
+        }
+
+        if (requestExecutor != null) {
+            Response response = requestExecutor.execute();
+            sendResponse(httpExchange, response);
+        } else {
+            //unknow URI
+            sendResponse(httpExchange, new Response("", HttpURLConnection.HTTP_BAD_REQUEST));
         }
     }
 
-    private void handle0(String requestMethod, URI requestURI, OutputStream responseBody) {
+    private void sendResponse(HttpExchange httpExchange, Response response) {
 
-        if("GET".equalsIgnoreCase(requestMethod)) {
+        try {
+            httpExchange.sendResponseHeaders(response.getHttpResponseCode(), response.getBody().getBytes().length);
+        } catch (IOException ignore) {
+            //not much to do besides logging
+        }
 
+        try (OutputStream os = httpExchange.getResponseBody()) {
+            os.write(response.getBody().getBytes("UTF-8"));
+        } catch (IOException ignore) {
+            //not much to do besides logging
         }
     }
-
-    private void handle0(URI requestURI, String requestMethod) {
-
-    }
-
-    public static void main(String[] args) {
-
-        Pattern sessionPattern = Pattern.compile("^/(\\d+)/session$");
-        Pattern stakePattern = Pattern.compile("^/(\\d+)/stake\\?sessionkey=(\\w+)$");
-        Pattern highStakePattern = Pattern.compile("^/(\\d+)/highstakes$");
-
-
-        Matcher m = sessionPattern.matcher("/1234/session");
-        if (m.matches()) {
-            System.out.println("The quantity is " + m.group(1));
-        }
-
-        Matcher m1 = stakePattern.matcher("/888/stake?sessionkey=QWER12A");
-        if (m1.matches()) {
-            System.out.println("offer if " + m1.group(1));
-            System.out.println("sessionkey " + m1.group(2));
-        }
-
-        Matcher m3 = highStakePattern.matcher("/888/highstakes");
-        if (m3.matches()) {
-            System.out.println("stack " + m3.group(1));
-        }
-
-        //http://localhost:8001/888/highstakes
-    }
-
-
-
 }
 
 
-///http://localhost:8001/1234/session

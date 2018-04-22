@@ -1,5 +1,8 @@
+import communication.RequestExecutorFactory;
 import communication.RootHttpHandler;
 import communication.SimpleHttpServer;
+import service.BetOffersService;
+import service.CustomerSessionService;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -15,14 +18,27 @@ public class AppStarter {
         Properties properies = new Properties();
         properies.load(AppStarter.class.getClassLoader().getResourceAsStream("application.properties"));
 
+        //init and start services
+        BetOffersService betOffersService = new BetOffersService();
+        betOffersService.start();
+        CustomerSessionService customerSessionService = new CustomerSessionService();
+        customerSessionService.start();
+
+        //init http handler + associated
+        RequestExecutorFactory requestExecutorFactory = new RequestExecutorFactory();
+        requestExecutorFactory.setBetOffersService(betOffersService);
+        requestExecutorFactory.setCustomerSessionService(customerSessionService);
+
+        RootHttpHandler httpHandler = new RootHttpHandler(requestExecutorFactory);
+
+        //create http server
         String serverHost = properies.getProperty("httpserver.host", "localhost");
         int serverPort = Integer.valueOf(properies.getProperty("httpserver.port", "8080"));
-        int serverTreadsNumber = Integer.valueOf(properies.getProperty("httpserver.threadsNumber", "50"));
 
+        Executor executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        SimpleHttpServer simpleHttpServer = new SimpleHttpServer(serverHost, serverPort, executor);
 
-        Executor executor = Executors.newFixedThreadPool(serverTreadsNumber);
-        final SimpleHttpServer simpleHttpServer = new SimpleHttpServer(serverHost, serverPort, executor);
-        RootHttpHandler httpHandler = new RootHttpHandler();
+        //configure and start http server
         simpleHttpServer.setContext("/", httpHandler);
         simpleHttpServer.start();
 
@@ -30,9 +46,10 @@ public class AppStarter {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                betOffersService.stop();
+                customerSessionService.stop();
                 simpleHttpServer.stop();
             }
         });
     }
-
 }
