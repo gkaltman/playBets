@@ -60,5 +60,7 @@ public class CustomerSessionServiceTest {
 
         boolean awaitSuccesful = countDownLatch.await(4, TimeUnit.SECONDS);
         Assert.assertTrue(awaitSuccesful);
+
+        customerSessionService.stop();
     }
 }

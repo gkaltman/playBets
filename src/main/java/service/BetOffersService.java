@@ -112,55 +112,10 @@ public class BetOffersService {
         this.maxNoOfStakesPerBetOffer = maxNoOfStakesPerBetOffer;
     }
 
-
-    public void start() {
-        //do nothing
-    }
-
-    public void stop() {
-        //do nothing
-    }
-
-
-
-    private static class CustomerBetOfferTuple {
-
-        private final int customerId;
-        private final int betOfferId;
-
-        public CustomerBetOfferTuple(int customerId, int betOfferId) {
-            this.customerId = customerId;
-            this.betOfferId = betOfferId;
-        }
-
-        public int getCustomerId() {
-            return customerId;
-        }
-
-        public int getBetOfferId() {
-            return betOfferId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            CustomerBetOfferTuple that = (CustomerBetOfferTuple) o;
-            return customerId == that.customerId &&
-                    betOfferId == that.betOfferId;
-        }
-
-        @Override
-        public int hashCode() {
-
-            return Objects.hash(customerId, betOfferId);
-        }
-    }
-
     /*
-     * Used only for testing.
+     * @return The max stake for the specified betting offer and customer. Returns <code>null</code> if no max stake recorded.
      */
-    Integer getMaxStakeValue(int bettingOfferId, int customerId) {
+    public Integer getMaxStakeValue(int bettingOfferId, int customerId) {
 
         _lock.readLock().lock();
         try {
@@ -170,4 +125,13 @@ public class BetOffersService {
             _lock.readLock().unlock();
         }
     }
+
+    public void start() {
+        //do nothing
+    }
+
+    public void stop() {
+        //do nothing
+    }
+
 }

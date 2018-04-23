@@ -27,32 +27,36 @@ public class RequestExecutorFactory {
     /**
      * @return RequestExecutor or <code>null</code> if no executor was found for the specified URI.
      */
-    public RequestExecutor getRequestHandler(HttpExchange httpExchange) throws IOException {
+    public RequestExecutor getRequestHandler(HttpExchange httpExchange) {
 
         URI uri = httpExchange.getRequestURI();
 
-        if(httpExchange.getRequestMethod().equalsIgnoreCase("GET")) {
+        try {
+            if (httpExchange.getRequestMethod().equalsIgnoreCase("GET")) {
 
-            Matcher createSessionMatcher = createSessionPattern.matcher(uri.toString());
-            if (createSessionMatcher.matches()) {
-                return new CreateSessionRequestExecutor(customerSessionService, Integer.valueOf(createSessionMatcher.group(1)));
+                Matcher createSessionMatcher = createSessionPattern.matcher(uri.toString());
+                if (createSessionMatcher.matches()) {
+                    return new CreateSessionRequestExecutor(customerSessionService, Integer.valueOf(createSessionMatcher.group(1)));
+                }
+
+                Matcher highestStakesMatcher = highestStakesPattern.matcher(uri.toString());
+                if (highestStakesMatcher.matches()) {
+                    int betOfferId = Integer.valueOf(highestStakesMatcher.group(1));
+                    return new HighestStakesRequestExecutor(betOffersService, betOfferId);
+                }
+            } else if (httpExchange.getRequestMethod().equalsIgnoreCase("POST")) {
+
+                Matcher postStakeMatcher = postStakePattern.matcher(uri.toString());
+                if (postStakeMatcher.matches()) {
+
+                    int betOfferId = Integer.valueOf(postStakeMatcher.group(1));
+                    String sessionKey = postStakeMatcher.group(2);
+                    int stake = Integer.valueOf(StringUtil.fromInputStreamToString(httpExchange.getRequestBody(), "UTF-8"));
+                    return new PostStakeRequestExecutor(betOffersService, customerSessionService, betOfferId, sessionKey, stake);
+                }
             }
-
-            Matcher highestStakesMatcher = highestStakesPattern.matcher(uri.toString());
-            if(highestStakesMatcher.matches()) {
-                int betOfferId = Integer.valueOf(highestStakesMatcher.group(1));
-                return new HighestStakesRequestExecutor(betOffersService, betOfferId);
-            }
-        } else if(httpExchange.getRequestMethod().equalsIgnoreCase("POST")) {
-
-            Matcher postStakeMatcher = postStakePattern.matcher(uri.toString());
-            if (postStakeMatcher.matches()) {
-
-                int betOfferId = Integer.valueOf(postStakeMatcher.group(1));
-                String sessionKey = postStakeMatcher.group(2);
-                int stake = Integer.valueOf(StringUtil.fromInputStreamToString(httpExchange.getRequestBody(), "UTF-8"));
-                return new PostStakeRequestExecutor(betOffersService, customerSessionService, betOfferId, sessionKey, stake);
-            }
+        } catch (IOException  | NumberFormatException | IndexOutOfBoundsException ignore) {
+            //just log
         }
 
         return null;

@@ -23,7 +23,6 @@ public class CustomerSessionService {
     private List<ExpiredSessionListener> expiredSessionListener = new CopyOnWriteArrayList<>();
 
 
-
     public void start() {
         sessionExpirationService.start();
     }
@@ -50,7 +49,6 @@ public class CustomerSessionService {
 
             sessionKeyToSession.put(session.getSessionKey(), session);
             customersWithSession.add(customerId);
-
             sessionExpirationService.addNewSession(session);
 
             return session.getSessionKey();
@@ -76,7 +74,8 @@ public class CustomerSessionService {
             customersWithSession.remove(customerSession.getCustomerId());
         }
 
-        expiredSessionListener.stream().forEach(listener -> listener.notifyExpiredSession(expiredSession.getCustomerId(), expiredSession.getSessionKey()));
+        expiredSessionListener.stream()//
+                .forEach(listener -> listener.notifyExpiredSession(expiredSession.getCustomerId(), expiredSession.getSessionKey()));
     }
 
     public void addListener(ExpiredSessionListener listener) {
