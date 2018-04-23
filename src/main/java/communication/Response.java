@@ -19,4 +19,12 @@ public class Response {
 
         return body;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "body='" + body + '\'' +
+                ", httpResponseCode=" + httpResponseCode +
+                '}';
+    }
 }

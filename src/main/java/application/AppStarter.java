@@ -1,5 +1,6 @@
 package application;
 
+import com.sun.net.httpserver.HttpContext;
 import communication.RequestExecutorFactory;
 import communication.RootHttpHandler;
 import communication.SimpleHttpServer;
@@ -24,6 +25,7 @@ public class AppStarter {
     private BetOffersService betOffersService;
     private CustomerSessionService customerSessionService;
     private SimpleHttpServer simpleHttpServer;
+    private HttpContext rootContext;
 
     public  void start() throws IOException {
 
@@ -51,7 +53,8 @@ public class AppStarter {
         simpleHttpServer = new SimpleHttpServer(serverHost, serverPort, executor);
 
         //configure and start http server
-        simpleHttpServer.setContext("/", httpHandler);
+         rootContext = simpleHttpServer.setContext("/", httpHandler);
+
         simpleHttpServer.start();
 
 

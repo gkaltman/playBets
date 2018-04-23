@@ -11,7 +11,7 @@ import java.util.concurrent.Executor;
 public class SimpleHttpServer {
 
     private HttpServer server;
-    private int maxDelayUntilShutdownInSec = 10;
+    private int maxDelayUntilShutdownInSec = 3;
 
     public SimpleHttpServer(String host, int port) throws IOException {
 
@@ -27,6 +27,11 @@ public class SimpleHttpServer {
     public HttpContext setContext(String path, HttpHandler httpHandler) {
 
         return server.createContext(path, httpHandler);
+    }
+
+    public void removeContext(HttpContext context) {
+
+        server.removeContext(context);
     }
 
     public void start() throws IOException {
