@@ -15,18 +15,25 @@ public class AppStarter {
 
 
     public static void main(String[] args) throws IOException {
-        start();
+
+        AppStarter appStarted = new AppStarter();
+        appStarted.start();
+
     }
 
-    public static void start() throws IOException {
+    private BetOffersService betOffersService;
+    private CustomerSessionService customerSessionService;
+    private SimpleHttpServer simpleHttpServer;
+
+    public  void start() throws IOException {
 
         Properties properies = new Properties();
         properies.load(AppStarter.class.getClassLoader().getResourceAsStream("application.properties"));
 
         //init and start services
-        BetOffersService betOffersService = new BetOffersService();
+        betOffersService = new BetOffersService();
         betOffersService.start();
-        CustomerSessionService customerSessionService = new CustomerSessionService();
+        customerSessionService = new CustomerSessionService();
         customerSessionService.start();
 
         //init http handler + associated
@@ -41,7 +48,7 @@ public class AppStarter {
         int serverPort = Integer.valueOf(properies.getProperty("httpserver.port", "8080"));
 
         Executor executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        SimpleHttpServer simpleHttpServer = new SimpleHttpServer(serverHost, serverPort, executor);
+        simpleHttpServer = new SimpleHttpServer(serverHost, serverPort, executor);
 
         //configure and start http server
         simpleHttpServer.setContext("/", httpHandler);
@@ -51,10 +58,15 @@ public class AppStarter {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                betOffersService.stop();
-                customerSessionService.stop();
-                simpleHttpServer.stop();
+                AppStarter.this.stop();
             }
         });
+    }
+
+    public void stop() {
+
+        betOffersService.stop();
+        customerSessionService.stop();
+        simpleHttpServer.stop();
     }
 }
