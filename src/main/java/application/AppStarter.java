@@ -1,3 +1,5 @@
+package application;
+
 import communication.RequestExecutorFactory;
 import communication.RootHttpHandler;
 import communication.SimpleHttpServer;
@@ -13,7 +15,10 @@ public class AppStarter {
 
 
     public static void main(String[] args) throws IOException {
+        start();
+    }
 
+    public static void start() throws IOException {
 
         Properties properies = new Properties();
         properies.load(AppStarter.class.getClassLoader().getResourceAsStream("application.properties"));
