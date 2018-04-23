@@ -2,22 +2,24 @@ package model;
 
 import util.StringUtil;
 
+import java.sql.Time;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-
+/**
+ * An expiring customer session.
+ */
 public class CustomerSession implements Delayed {
 
     private final String sessionKey;
     private final int customerId;
     private final long expirationTimeInMs;
-    private long timeToLiveInMs = TimeUnit.MINUTES.toMillis(10);
 
-    public CustomerSession(int customerId) {
+    public CustomerSession(int customerId, long timeToLiveInSec) {
 
         this.sessionKey = StringUtil.generateRandomAlphaNumericString();
         this.customerId = customerId;
-        this.expirationTimeInMs = System.currentTimeMillis() + timeToLiveInMs;
+        this.expirationTimeInMs = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(timeToLiveInSec);
     }
 
     /**
@@ -53,8 +55,5 @@ public class CustomerSession implements Delayed {
         return this.sessionKey.compareTo(other.sessionKey);
     }
 
-    public void setTimeToLiveInMs(long timeToLiveInMs) {
 
-        this.timeToLiveInMs = timeToLiveInMs;
-    }
 }

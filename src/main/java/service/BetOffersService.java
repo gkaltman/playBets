@@ -7,8 +7,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BetOffersService {
 
-    //For every betting offer, keep the highest stakes.
-    //In order to preserve memory, we keep only the highest stakes (e.g. 20).
+    //For every betting offer, keep the highest stakes. In order to preserve memory, we keep only the highest stakes (e.g. 20).
     private Map<Integer, TreeSet<Stake>> betOfferIdToHighestStakes = new HashMap<>();
 
     //For every tuple (customer, betOffer) keep the max stake.
@@ -34,7 +33,7 @@ public class BetOffersService {
 
                 TreeSet<Stake> highestStakes = betOfferIdToHighestStakes.get(betOfferId);
                 if(highestStakes.size() == maxNoOfStakesPerBetOffer && highestStakes.last().getValue() >= stake) {
-                    return;
+                    return; //lowest stake from the highest stakes is greater than the received stake, so, we can ignore the new stake.
                 }
 
                 CustomerBetOfferTuple customerBetOfferTuple = new CustomerBetOfferTuple(customerId, betOfferId);
