@@ -4,7 +4,6 @@ import model.Stake;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import service.BetOffersService;
 
 import java.util.List;
 
@@ -37,17 +36,16 @@ public class BetOffersServiceTest {
         //command
         List<Stake> highestStakes = betOffersService.getHighestStakes(bettingOfferId);
 
-        System.out.println(highestStakes);
         //assert
         Assert.assertEquals(3, highestStakes.size());
         Assert.assertEquals(customerId1, highestStakes.get(0).getCustomerId());
-        Assert.assertEquals(475, highestStakes.get(0).getStake());
+        Assert.assertEquals(475, highestStakes.get(0).getValue());
 
         Assert.assertEquals(customerId3, highestStakes.get(1).getCustomerId());
-        Assert.assertEquals(430, highestStakes.get(1).getStake());
+        Assert.assertEquals(430, highestStakes.get(1).getValue());
 
         Assert.assertEquals(customerId4, highestStakes.get(2).getCustomerId());
-        Assert.assertEquals(417, highestStakes.get(2).getStake());
+        Assert.assertEquals(417, highestStakes.get(2).getValue());
 
         Assert.assertEquals(475, (int) betOffersService.getMaxStakeValue(bettingOfferId, customerId1));
         Assert.assertNull(betOffersService.getMaxStakeValue(bettingOfferId, customerId2));

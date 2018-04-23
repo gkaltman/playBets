@@ -1,18 +1,18 @@
 package model;
 
 /**
- * Represents a stake give by a customer for a given bet offer.
+ * Represents a value give by a customer for a given bet offer.
  */
 public class Stake {
 
     private final int betOfferId;
     private final int customerId;
-    private int stake;
+    private int value;
 
-    public Stake(int betOfferId, int customerId, int stake) {
+    public Stake(int betOfferId, int customerId, int value) {
         this.betOfferId = betOfferId;
         this.customerId = customerId;
-        this.stake = stake;
+        this.value = value;
     }
 
     public int getBetOfferId() {
@@ -23,8 +23,8 @@ public class Stake {
         return customerId;
     }
 
-    public int getStake() {
-        return stake;
+    public int getValue() {
+        return value;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class Stake {
         return "Stake{" +
                 "betOfferId=" + betOfferId +
                 ", customerId=" + customerId +
-                ", stake=" + stake +
+                ", value=" + value +
                 '}';
     }
 }

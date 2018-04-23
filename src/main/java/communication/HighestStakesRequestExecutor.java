@@ -23,7 +23,7 @@ public class HighestStakesRequestExecutor implements RequestExecutor {
         List<Stake> highestStakes = betOffersService.getHighestStakes(betOfferId);
 
         String body = highestStakes.stream()//
-                .map(stake -> stake.getCustomerId() + "=" + stake.getStake())//
+                .map(stake -> stake.getCustomerId() + "=" + stake.getValue())//
                 .collect(Collectors.joining(","));
         return new Response(body, HttpURLConnection.HTTP_OK);
     }

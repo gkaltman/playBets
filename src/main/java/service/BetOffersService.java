@@ -9,10 +9,9 @@ public class BetOffersService {
 
     //For every betting offer, keep the highest stakes.
     //In order to preserve memory, we keep only the highest stakes (e.g. 20).
-    //All operations are ~log(n)
     private Map<Integer, TreeSet<Stake>> betOfferIdToHighestStakes = new HashMap<>();
 
-    //For every tuple (customer, betoffer) keep the max stake.
+    //For every tuple (customer, betOffer) keep the max stake.
     private Map<CustomerBetOfferTuple, Stake> customerBetOfferToMaxStake = new HashMap<>();
 
     private int maxNoOfStakesPerBetOffer = 20;
@@ -27,10 +26,16 @@ public class BetOffersService {
 
         _lock.writeLock().lock();
         try {
-            boolean isFirstStakeEverForBetOffer = !betOfferIdToHighestStakes.containsKey(betOfferId);
-            if (isFirstStakeEverForBetOffer) {
+
+            boolean isFirstStakeForBetOffer = !betOfferIdToHighestStakes.containsKey(betOfferId);
+            if (isFirstStakeForBetOffer) {
                 addFistStakeEverForBettingOffer(customerId, betOfferId, stake);
             } else {
+
+                TreeSet<Stake> highestStakes = betOfferIdToHighestStakes.get(betOfferId);
+                if(highestStakes.size() == maxNoOfStakesPerBetOffer && highestStakes.last().getValue() >= stake) {
+                    return;
+                }
 
                 CustomerBetOfferTuple customerBetOfferTuple = new CustomerBetOfferTuple(customerId, betOfferId);
                 boolean hasCustomerAlreadyPostedAStake = customerBetOfferToMaxStake.containsKey(customerBetOfferTuple);
@@ -70,7 +75,7 @@ public class BetOffersService {
 
         Stake maxStake = customerBetOfferToMaxStake.get(customerBetOfferTuple);
 
-        if(maxStake.getStake() < stake) {
+        if(maxStake.getValue() < stake) {
 
             int betOfferId = customerBetOfferTuple.getBetOfferId();
             int customerId = customerBetOfferTuple.getCustomerId();
@@ -108,19 +113,6 @@ public class BetOffersService {
         this.maxNoOfStakesPerBetOffer = maxNoOfStakesPerBetOffer;
     }
 
-    /*
-     * Used only for testing.
-     */
-    Integer getMaxStakeValue(int bettingOfferId, int customerId) {
-
-        _lock.readLock().lock();
-        try {
-            Stake stake = customerBetOfferToMaxStake.get(new CustomerBetOfferTuple(customerId, bettingOfferId));
-            return stake != null ? stake.getStake() : null;
-        } finally {
-                _lock.readLock().unlock();
-            }
-    }
 
     public void start() {
         //do nothing
@@ -130,23 +122,7 @@ public class BetOffersService {
         //do nothing
     }
 
-    private static class HighestStakeFirstComparator implements Comparator<Stake> {
 
-        @Override
-        public int compare(Stake stake1, Stake betoffer2) {
-
-            if (stake1.getStake() < betoffer2.getStake()) {
-                return 1;
-            }
-            if (stake1.getStake() > betoffer2.getStake()) {
-                return -1;
-            } else {
-                //if stakes are equal, order by consumer id.
-                return Integer.compare(stake1.getCustomerId(), betoffer2.getCustomerId());
-            }
-
-        }
-    }
 
     private static class CustomerBetOfferTuple {
 
@@ -179,6 +155,20 @@ public class BetOffersService {
         public int hashCode() {
 
             return Objects.hash(customerId, betOfferId);
+        }
+    }
+
+    /*
+     * Used only for testing.
+     */
+    Integer getMaxStakeValue(int bettingOfferId, int customerId) {
+
+        _lock.readLock().lock();
+        try {
+            Stake stake = customerBetOfferToMaxStake.get(new CustomerBetOfferTuple(customerId, bettingOfferId));
+            return stake != null ? stake.getValue() : null;
+        } finally {
+            _lock.readLock().unlock();
         }
     }
 }
