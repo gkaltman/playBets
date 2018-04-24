@@ -22,11 +22,27 @@ public class AppStarter {
 
     public static void main(String[] args) throws IOException {
 
-        Properties properies = new Properties();
-        properies.load(AppStarter.class.getClassLoader().getResourceAsStream("application.properties"));
+        Properties properties = buildProperties(args);
 
         AppStarter appStarted = new AppStarter();
-        appStarted.start(properies);
+        appStarted.start(properties);
+    }
+
+    private static Properties buildProperties(String[] args) throws IOException {
+        Properties properties = new Properties();
+        properties.load(AppStarter.class.getClassLoader().getResourceAsStream("application.properties"));
+
+        //naive way to parse property of the form name=value
+        for(int i = 0; i < args.length; i++) {
+            String arg = args[0];
+            if(arg.contains("=")){
+                String[] nameValue = arg.split("=");
+                if(nameValue.length == 2) {
+                    properties.put(nameValue[0], nameValue[1]);
+                }
+            }
+        }
+        return properties;
     }
 
     private BetOffersService betOffersService;
@@ -65,7 +81,7 @@ public class AppStarter {
         //configure and start http server
         simpleHttpServer.setContext("/", httpHandler);
         simpleHttpServer.start();
-        LOGGER.log(Level.INFO, "App started.");
+        LOGGER.log(Level.INFO, "App started on " + serverHost + ", port " + serverPort);
 
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
