@@ -39,7 +39,6 @@ public class SimpleHttpServer {
         server.start();
     }
 
-
     public void stop() {
 
         server.stop(maxDelayUntilShutdownInSec);

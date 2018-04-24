@@ -8,6 +8,8 @@ import util.StringUtil;
 import java.io.*;
 import java.net.URI;
 import java.nio.Buffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,14 +22,12 @@ public class RequestExecutorFactory {
     private Pattern postStakePattern = Pattern.compile("^/(\\d+)/stake\\?sessionkey=(\\w+)$");
     private Pattern highestStakesPattern = Pattern.compile("^/(\\d+)/highstakes$");
 
-
-    private CustomerSessionService customerSessionService;
-    private BetOffersService betOffersService;
+    private static final Logger LOGGER = Logger.getLogger( RequestExecutorFactory.class.getName() );
 
     /**
      * @return RequestExecutor or <code>null</code> if no executor was found for the specified URI.
      */
-    public RequestExecutor getRequestHandler(HttpExchange httpExchange) {
+    public RequestExecutor getRequestExecutor(HttpExchange httpExchange) {
 
         URI uri = httpExchange.getRequestURI();
 
@@ -36,13 +36,16 @@ public class RequestExecutorFactory {
 
                 Matcher createSessionMatcher = createSessionPattern.matcher(uri.toString());
                 if (createSessionMatcher.matches()) {
-                    return new CreateSessionRequestExecutor(customerSessionService, Integer.valueOf(createSessionMatcher.group(1)));
+                    int customerId = Integer.valueOf(createSessionMatcher.group(1));
+                    check31BitUnsignedInt("customerId", customerId);
+                    return new CreateSessionRequestExecutor(customerId);
                 }
 
                 Matcher highestStakesMatcher = highestStakesPattern.matcher(uri.toString());
                 if (highestStakesMatcher.matches()) {
                     int betOfferId = Integer.valueOf(highestStakesMatcher.group(1));
-                    return new HighestStakesRequestExecutor(betOffersService, betOfferId);
+                    check31BitUnsignedInt("betofferId", betOfferId);
+                    return new HighestStakesRequestExecutor(betOfferId);
                 }
             } else if (httpExchange.getRequestMethod().equalsIgnoreCase("POST")) {
 
@@ -50,26 +53,25 @@ public class RequestExecutorFactory {
                 if (postStakeMatcher.matches()) {
 
                     int betOfferId = Integer.valueOf(postStakeMatcher.group(1));
+                    check31BitUnsignedInt("betofferId", betOfferId);
                     String sessionKey = postStakeMatcher.group(2);
                     int stake = Integer.valueOf(StringUtil.fromInputStreamToString(httpExchange.getRequestBody(), "UTF-8"));
-                    return new PostStakeRequestExecutor(betOffersService, customerSessionService, betOfferId, sessionKey, stake);
+                    check31BitUnsignedInt("stake", stake);
+                    return new PostStakeRequestExecutor(betOfferId, sessionKey, stake);
                 }
             }
-        } catch (IOException  | NumberFormatException | IndexOutOfBoundsException ignore) {
-            //just log
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, e.getMessage(), e);
         }
 
         return null;
     }
 
-    public void setCustomerSessionService(CustomerSessionService customerSessionService) {
+    private void check31BitUnsignedInt(String parameter, int value) {
 
-        this.customerSessionService = customerSessionService;
-    }
-
-    public void setBetOffersService(BetOffersService betOffersService) {
-
-        this.betOffersService = betOffersService;
+        if(value < 0) {
+            throw new IllegalArgumentException("Parameter " + parameter + " must be a 31 bit unsigned int");
+        }
     }
 }
 

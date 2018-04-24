@@ -53,6 +53,27 @@ public class BetOffersServiceTest {
         Assert.assertEquals(417, (int) betOffersService.getMaxStakeValue(bettingOfferId, customerId4));
     }
 
+    @Test
+    public void getHighestStakeForRandomBetOffer() {
+
+        List<Stake> highestStakes = betOffersService.getHighestStakes(1231);
+        Assert.assertTrue(highestStakes.isEmpty());
+    }
+
+    @Test
+    public void getStakesNumber() {
+
+        int customerId1 = 1;
+        int customerId2 = 2;
+        int bettingOfferId1 = 888;
+        int bettingOfferId2 = 889;
+
+        betOffersService.addStake(customerId1, bettingOfferId1, 450);
+        betOffersService.addStake(customerId2, bettingOfferId1, 415);
+        betOffersService.addStake(customerId1, bettingOfferId2, 475);
+
+        Assert.assertEquals(3, betOffersService.getStakesNumer());
+    }
     /**
      * Scenario: for a given betOffer, we have the max number of stakes.
      * A new stake is posted. The new stake is lower than the lowest highest.

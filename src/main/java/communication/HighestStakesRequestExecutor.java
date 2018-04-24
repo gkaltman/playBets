@@ -1,6 +1,7 @@
 package communication;
 
 import model.Stake;
+import service.AllServices;
 import service.BetOffersService;
 
 import java.net.HttpURLConnection;
@@ -9,18 +10,16 @@ import java.util.stream.Collectors;
 
 public class HighestStakesRequestExecutor implements RequestExecutor {
 
-    private final BetOffersService betOffersService;
     private final int betOfferId;
 
-    public HighestStakesRequestExecutor(BetOffersService betOffersService, int betOfferId) {
-        this.betOffersService = betOffersService;
+    public HighestStakesRequestExecutor(int betOfferId) {
         this.betOfferId = betOfferId;
     }
 
     @Override
-    public Response execute() {
+    public Response execute(AllServices allServices) {
 
-        List<Stake> highestStakes = betOffersService.getHighestStakes(betOfferId);
+        List<Stake> highestStakes = allServices.getBetOffersService().getHighestStakes(betOfferId);
 
         String body = highestStakes.stream()//
                 .map(stake -> stake.getCustomerId() + "=" + stake.getValue())//

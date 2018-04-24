@@ -4,6 +4,8 @@ import model.Stake;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BetOffersService {
 
@@ -17,20 +19,25 @@ public class BetOffersService {
 
     private ReentrantReadWriteLock _lock = new ReentrantReadWriteLock();
     private Comparator highestStakeFirstComparator = new HighestStakeFirstComparator();
+    private CircuitBreaker circuitBreaker = () -> true; //do nothing circuit breaker
 
     /**
      * Add a stake posted by the specified customer for the specified betting offer.
+     * @throws IllegalStateException if from performance reason, new stakes can't be accepted anymore.
      */
     public void addStake(int customerId, int betOfferId, int stake) {
 
         _lock.writeLock().lock();
         try {
 
+            if(!circuitBreaker.allowCall()) {
+                throw new IllegalStateException("Can't accept new stakes");
+            }
+
             boolean isFirstStakeForBetOffer = !betOfferIdToHighestStakes.containsKey(betOfferId);
             if (isFirstStakeForBetOffer) {
-                addFistStakeEverForBettingOffer(customerId, betOfferId, stake);
+                addFistStakeForBettingOffer(customerId, betOfferId, stake);
             } else {
-
                 TreeSet<Stake> highestStakes = betOfferIdToHighestStakes.get(betOfferId);
                 if(highestStakes.size() == maxNoOfStakesPerBetOffer && highestStakes.last().getValue() >= stake) {
                     return; //lowest stake from the highest stakes is greater than the received stake, so, we can ignore the new stake.
@@ -49,7 +56,7 @@ public class BetOffersService {
         }
     }
 
-    private void addFistStakeEverForBettingOffer(int customerId, int betOfferId, int stakeValue) {
+    private void addFistStakeForBettingOffer(int customerId, int betOfferId, int stakeValue) {
 
         TreeSet<Stake> highestStakes = new TreeSet(highestStakeFirstComparator);
         Stake stake = new Stake(betOfferId, customerId, stakeValue);
@@ -100,7 +107,7 @@ public class BetOffersService {
         try {
             TreeSet<Stake> highestStakes = betOfferIdToHighestStakes.get(betOfferId);
 
-            return highestStakes.isEmpty() ? Collections.emptyList() : new ArrayList(highestStakes);
+            return highestStakes == null ? Collections.emptyList() : new ArrayList(highestStakes);
 
         } finally {
             _lock.readLock().unlock();
@@ -126,6 +133,11 @@ public class BetOffersService {
         }
     }
 
+    public void setCircuitBreaker(CircuitBreaker circuitBreaker) {
+
+        this.circuitBreaker = circuitBreaker;
+    }
+
     public void start() {
         //do nothing
     }
@@ -134,4 +146,15 @@ public class BetOffersService {
         //do nothing
     }
 
+    int getStakesNumer() {
+        _lock.readLock().lock();
+        try {
+
+             return betOfferIdToHighestStakes.values().stream()//
+                     .mapToInt(tree -> tree.size()).sum();
+
+        } finally {
+            _lock.readLock().unlock();
+        }
+    }
 }
