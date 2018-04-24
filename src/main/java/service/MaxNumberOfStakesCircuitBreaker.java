@@ -15,6 +15,6 @@ public class MaxNumberOfStakesCircuitBreaker implements CircuitBreaker {
     @Override
     public boolean allowCall() {
 
-        return betOffersService.getStakesNumer() < 1000000 ? true : false;
+        return betOffersService.getStakesNumber() < 1000000 ? true : false;
     }
 }

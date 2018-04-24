@@ -72,7 +72,7 @@ public class BetOffersServiceTest {
         betOffersService.addStake(customerId2, bettingOfferId1, 415);
         betOffersService.addStake(customerId1, bettingOfferId2, 475);
 
-        Assert.assertEquals(3, betOffersService.getStakesNumer());
+        Assert.assertEquals(3, betOffersService.getStakesNumber());
     }
     /**
      * Scenario: for a given betOffer, we have the max number of stakes.

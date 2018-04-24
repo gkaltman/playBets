@@ -146,12 +146,12 @@ public class BetOffersService {
         //do nothing
     }
 
-    int getStakesNumer() {
+    int getStakesNumber() {
         _lock.readLock().lock();
         try {
 
              return betOfferIdToHighestStakes.values().stream()//
-                     .mapToInt(tree -> tree.size()).sum();
+                     .mapToInt(stakes -> stakes.size()).sum();
 
         } finally {
             _lock.readLock().unlock();
