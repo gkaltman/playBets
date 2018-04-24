@@ -9,12 +9,16 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Application starting point. It also add a shutdown hook for clean shut down.
  */
 public class AppStarter {
 
+
+    private static final Logger LOGGER = Logger.getLogger(AppStarter.class.getName());
 
     public static void main(String[] args) throws IOException {
 
@@ -31,6 +35,8 @@ public class AppStarter {
 
 
     public void start(Properties properties) throws IOException {
+
+        LOGGER.log(Level.INFO, "Starting app...");
 
         //init and start services
         betOffersService = new BetOffersService();
@@ -59,12 +65,17 @@ public class AppStarter {
         //configure and start http server
         simpleHttpServer.setContext("/", httpHandler);
         simpleHttpServer.start();
+        LOGGER.log(Level.INFO, "App started.");
 
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+
+                LOGGER.log(Level.INFO, "Shutting down app..");
                 AppStarter.this.stop();
+
+
             }
         });
     }
@@ -74,5 +85,6 @@ public class AppStarter {
         betOffersService.stop();
         customerSessionService.stop();
         simpleHttpServer.stop();
+
     }
 }

@@ -30,7 +30,7 @@ public class BetOffersService {
         _lock.writeLock().lock();
         try {
 
-            if(!circuitBreaker.allowCall()) {
+            if(!circuitBreaker.allowCall()) { //inside the lock because it might use some fields of this very class
                 throw new IllegalStateException("Can't accept new stakes");
             }
 

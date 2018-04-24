@@ -116,4 +116,11 @@ public class BetOffersServiceTest {
 
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testAlwaysOpenCircuitBreaker() {
+
+        betOffersService.setCircuitBreaker(() -> false);
+        betOffersService.addStake(1,1,1);
+    }
+
 }
