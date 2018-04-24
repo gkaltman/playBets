@@ -15,6 +15,9 @@ Design choices:
 The implemented circuit breaker is dummy (stop accepting stake posts if the number of stakes exceeds a hardcoded threashold).
 5. In order to improve performance in a multi-threaded environement, ReentrantReadWriteLock were used. Many readers in the same time.
 
+JavaDoc
+1. I added comments wherever I felt a reader/developer might need it.
+
 Libraries:
 1. For the http server, I used what was in spec com.sun.net.httpserver.HttpServer.
 2. For testing, I used junit and httpclient.
