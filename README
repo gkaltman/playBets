@@ -12,7 +12,7 @@ If you look in the code, starting point: class AppStarter.
 Design choices:
 1. Because the application is CPU bound, the number of threads used to serve requests is set to Runtime.getRuntime().availableProcessors().
 2. In order to minimize memory, for each bet offer we keep a max of 20 (or other value) stakes. The highest.
-3. In order to maximize performance, the stakes for a betoffer are kept in a TreeSet, the add and remove operations are O(n).
+3. In order to maximize performance, the stakes for a betoffer are kept in a TreeSet, the add and remove operations are O(log n).
 4. Because the stakes are kept forever and the specification does not show any way to release memory, a circuit breaker was added.
 The implemented circuit breaker is dummy (stop accepting stake posts if the number of stakes exceeds a hardcoded threashold).
 5. In order to improve performance in a multi-threaded environement, ReentrantReadWriteLock were used. Many readers in the same time.
