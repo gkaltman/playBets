@@ -7,6 +7,8 @@ java -jar playWithBets.jar
 By default the app starts on localhost:8001. If you wanna change the port:
 java -jar playWithBets.jar httpserver.port=8002
 
+If you look in the code, starting point: class AppStarter.
+
 Design choices:
 1. Because the application is CPU bound, the number of threads used to serve requests is set to Runtime.getRuntime().availableProcessors().
 2. In order to minimize memory, for each bet offer we keep a max of 20 (or other value) stakes. The highest.
