@@ -11,6 +11,10 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Handles the lifecycle of a customer session: creation + expiration.<br>
+ * Allows listeners to listen to the session expiration.
+ */
 public class CustomerSessionService {
 
     private static final Logger LOGGER = Logger.getLogger(CustomerSessionService.class.getName());
@@ -85,6 +89,9 @@ public class CustomerSessionService {
 
     public void setSessionTimeToLiveInSec(long timeToLiveInSec) {
 
+        if(timeToLiveInSec < 1) {
+            throw new IllegalArgumentException("timeToLiveInSec must be larger than 0");
+        }
         sessionTimeToLiveInSec = timeToLiveInSec;
     }
 
@@ -102,7 +109,7 @@ public class CustomerSessionService {
                         CustomerSession expiredSession = expiringSessionQueue.take();
                         handleExpiredSession(expiredSession);
                     } catch (InterruptedException ignore) {
-                        break;
+                        break; //regular stop
                     } catch (Throwable t) {
                         //we choose just to log the exception and keep running.
                         LOGGER.log(Level.SEVERE, t.getMessage(), t);

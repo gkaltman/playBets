@@ -54,6 +54,4 @@ public class CustomerSession implements Delayed {
         //if two sessions expire in the same time, order them by sessionKey to have a correct implementation for comparareTo.
         return this.sessionKey.compareTo(other.sessionKey);
     }
-
-
 }

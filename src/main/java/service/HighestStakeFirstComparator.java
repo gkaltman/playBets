@@ -18,7 +18,7 @@ class HighestStakeFirstComparator implements Comparator<Stake> {
         if (stake1.getValue() > stake2.getValue()) {
             return -1;
         } else {
-            //if stakes are equal, order by consumer id.
+            //if stakes are equal, order by customer id.
             return Integer.compare(stake1.getCustomerId(), stake2.getCustomerId());
         }
 

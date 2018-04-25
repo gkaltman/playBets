@@ -1,7 +1,7 @@
 package model;
 
 /**
- * Represents a value give by a customer for a given bet offer.
+ * Represents the stake posted by a customer for a given bet offer.
  */
 public class Stake {
 

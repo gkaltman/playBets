@@ -1,7 +1,7 @@
 package service;
 
 /**
- * Allows the application to cut various processes in order to keep the application alive.
+ * Allows the application to drop/block various calls in order to keep the application alive.
  */
 public interface CircuitBreaker {
 

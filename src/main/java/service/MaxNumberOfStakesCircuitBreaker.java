@@ -2,7 +2,7 @@ package service;
 
 /**
  * Dummy circuit breaker. Breaks circuit when the total number of stakes is greater than a hardcoded value.
- * Just of show.
+ * Just for show.
  */
 public class MaxNumberOfStakesCircuitBreaker implements CircuitBreaker {
 

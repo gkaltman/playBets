@@ -29,10 +29,6 @@ public class SimpleHttpServer {
         return server.createContext(path, httpHandler);
     }
 
-    public void removeContext(HttpContext context) {
-
-        server.removeContext(context);
-    }
 
     public void start() throws IOException {
 

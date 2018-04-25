@@ -16,10 +16,10 @@ Design choices:
 4. Because the stakes are kept forever and the specification does not show any way to release memory, a circuit breaker was added.
 The implemented circuit breaker is dummy (stop accepting stake posts if the number of stakes exceeds a hardcoded threashold).
 5. In order to improve performance in a multi-threaded environment, ReentrantReadWriteLocks were used, which allow for many readers in the same time.
-
+6. For easy testing, without Spring, the "beans" are injected manually at application start up.
 
 Libraries:
-1. For the http server, I used what was in spec: com.sun.net.httpserver.HttpServer.
+1. For the http server, I used what was in the spec: com.sun.net.httpserver.HttpServer.
 2. For testing, I used junit and httpclient.
 
 Github:

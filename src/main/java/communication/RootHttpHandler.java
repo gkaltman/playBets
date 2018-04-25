@@ -41,7 +41,7 @@ public class RootHttpHandler implements HttpHandler {
             Response response = requestExecutor.execute(allServices);
             sendResponse(httpExchange, response);
         } else {
-            //unknow URI
+            //unparsable URI
             sendResponse(httpExchange, new Response("", HttpURLConnection.HTTP_BAD_REQUEST));
         }
     }

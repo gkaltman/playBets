@@ -7,6 +7,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Handles the stakes posted by customers for bet offers.
+ */
 public class BetOffersService {
 
     //For every betting offer, keep the highest stakes. In order to preserve memory, we keep only the highest stakes (e.g. 20).
@@ -107,6 +110,7 @@ public class BetOffersService {
         try {
             TreeSet<Stake> highestStakes = betOfferIdToHighestStakes.get(betOfferId);
 
+
             return highestStakes == null ? Collections.emptyList() : new ArrayList(highestStakes);
 
         } finally {
@@ -116,6 +120,9 @@ public class BetOffersService {
 
     public void setMaxNoOfStakesPerBetOffer(int maxNoOfStakesPerBetOffer) {
 
+        if(maxNoOfStakesPerBetOffer < 1) {
+            throw new IllegalArgumentException("maxNoOfStakesPerBetOffer must be greater than 0");
+        }
         this.maxNoOfStakesPerBetOffer = maxNoOfStakesPerBetOffer;
     }
 
@@ -134,6 +141,10 @@ public class BetOffersService {
     }
 
     public void setCircuitBreaker(CircuitBreaker circuitBreaker) {
+
+        if(circuitBreaker == null) {
+            throw new IllegalArgumentException("circuitBreaker can't be null");
+        }
 
         this.circuitBreaker = circuitBreaker;
     }

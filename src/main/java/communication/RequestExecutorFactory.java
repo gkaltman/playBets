@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Parse an URI and decide which executor should execute the client request.
+ * Parse an URI and create an request executor which will execute the client request.
  */
 public class RequestExecutorFactory {
 
@@ -25,7 +25,8 @@ public class RequestExecutorFactory {
     private static final Logger LOGGER = Logger.getLogger( RequestExecutorFactory.class.getName() );
 
     /**
-     * @return RequestExecutor or <code>null</code> if no executor was found for the specified URI.
+     * @return RequestExecutor or <br>
+     * <code>null</code> if the URI can't be parsed or the http request body can't be read.
      */
     public RequestExecutor getRequestExecutor(HttpExchange httpExchange) {
 
