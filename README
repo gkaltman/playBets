@@ -1,13 +1,11 @@
-Running the application:
+Running and stopping the application:
 
 Use Java 8.
 
-java -jar playWithBets.jar
-
-By default the app starts on localhost:8001. If you wanna change the port:
-java -jar playWithBets.jar httpserver.port=8002
-
-If you look in the code, starting point: class AppStarter.
+Start with:    java -jar playWithBets.jar
+Or start with: java -jar playWithBets.jar httpserver.port=8002
+Stop with:     CTRL+C or kill. The shutdown hook should activate and close the app cleanly.
+Main-class:    AppStarter
 
 Design choices:
 1. Because the application is CPU bound, the number of threads used to serve requests is set to Runtime.getRuntime().availableProcessors().
