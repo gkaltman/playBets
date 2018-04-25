@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +38,7 @@ public class CustomerSessionServiceTest {
     /**
      * Scenario: set session TTL to 2 seconds and create a session.
      * Expect: the session is expired.
-     * @throws InterruptedException
+     *
      */
     @Test
     public void testSessionExpiration() throws InterruptedException {
@@ -60,6 +62,44 @@ public class CustomerSessionServiceTest {
 
         boolean awaitSuccesful = countDownLatch.await(4, TimeUnit.SECONDS);
         Assert.assertTrue(awaitSuccesful);
+
+        customerSessionService.stop();
+    }
+
+    /**
+     * Scenario: set session TTL to 2 seconds and create 2 sessions.
+     * Expect: the sessions expired in the creation order.
+     *
+     */
+    @Test
+    public void testSessionsExpiredInCorrectOrder() throws InterruptedException {
+
+        //set up
+        customerSessionService.setSessionTimeToLiveInSec(2);
+        customerSessionService.start();
+
+        int customerId1 = 123;
+        int customerId2 = 124;
+
+        //command
+        customerSessionService.createSession(customerId1);
+        Thread.sleep(1000);
+        customerSessionService.createSession(customerId2);
+
+        List customersWithExpiredSession = new ArrayList();
+        //assert
+        CountDownLatch countDownLatch = new CountDownLatch(2);
+        customerSessionService.addListener((expiredCustomerId, sessionKey) -> {
+
+            customersWithExpiredSession.add(expiredCustomerId);
+            countDownLatch.countDown();
+        });
+
+        boolean awaitSuccesful = countDownLatch.await(4, TimeUnit.SECONDS);
+        Assert.assertTrue(awaitSuccesful);
+        Assert.assertEquals(2, customersWithExpiredSession.size());
+        Assert.assertEquals(customerId1, customersWithExpiredSession.get(0));
+        Assert.assertEquals(customerId2, customersWithExpiredSession.get(1));
 
         customerSessionService.stop();
     }
