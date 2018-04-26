@@ -1,13 +1,9 @@
 package communication;
 
 import com.sun.net.httpserver.HttpExchange;
-import service.BetOffersService;
-import service.CustomerSessionService;
 import util.StringUtil;
 
-import java.io.*;
 import java.net.URI;
-import java.nio.Buffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;

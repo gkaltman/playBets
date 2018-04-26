@@ -84,16 +84,10 @@ public class AppStarter {
         LOGGER.log(Level.INFO, "App started on " + serverHost + ", port " + serverPort);
 
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-
-                LOGGER.log(Level.INFO, "Shutting down app..");
-                AppStarter.this.stop();
-
-
-            }
-        });
+        Runtime.getRuntime().addShutdownHook((new Thread(()->{
+            LOGGER.log(Level.INFO, "Shutting down app..");
+            AppStarter.this.stop();
+        })));
     }
 
     public void stop() {

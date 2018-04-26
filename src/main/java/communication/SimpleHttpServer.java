@@ -13,15 +13,11 @@ public class SimpleHttpServer {
     private HttpServer server;
     private int maxDelayUntilShutdownInSec = 3;
 
-    public SimpleHttpServer(String host, int port) throws IOException {
-
-        this(host, port, null);
-    }
-
-    public SimpleHttpServer(String host, int port, Executor executor) throws IOException {
+        public SimpleHttpServer(String host, int port, Executor executor) throws IOException {
         server = HttpServer.create();
+
         server.setExecutor(executor); //null means default executor.
-        server.bind(new InetSocketAddress(port), 0); //0 means: use the OS default on TCP connection backlog.
+        server.bind(new InetSocketAddress(host, port), 0); //0 means: use the OS default on TCP connection backlog.
     }
 
     public HttpContext setContext(String path, HttpHandler httpHandler) {
@@ -30,7 +26,7 @@ public class SimpleHttpServer {
     }
 
 
-    public void start() throws IOException {
+    public void start() {
 
         server.start();
     }

@@ -1,13 +1,9 @@
 package service;
 
-import communication.RootHttpHandler;
 import model.CustomerSession;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,8 +74,7 @@ public class CustomerSessionService {
             customersWithSession.remove(customerSession.getCustomerId());
         }
 
-        expiredSessionListener.stream()//
-                .forEach(listener -> listener.notifyExpiredSession(expiredSession.getCustomerId(), expiredSession.getSessionKey()));
+        expiredSessionListener.forEach(listener -> listener.notifyExpiredSession(expiredSession.getCustomerId(), expiredSession.getSessionKey()));
     }
 
     public void addListener(ExpiredSessionListener listener) {

@@ -15,10 +15,6 @@ public class Stake {
         this.value = value;
     }
 
-    public int getBetOfferId() {
-        return betOfferId;
-    }
-
     public int getCustomerId() {
         return customerId;
     }

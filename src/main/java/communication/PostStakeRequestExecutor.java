@@ -11,7 +11,7 @@ public class PostStakeRequestExecutor implements RequestExecutor {
 
     private final int stake;
 
-    public PostStakeRequestExecutor(int betOfferId, String sessionKey, int stake) {
+    PostStakeRequestExecutor(int betOfferId, String sessionKey, int stake) {
 
         this.betOfferId = betOfferId;
         this.sessionKey = sessionKey;

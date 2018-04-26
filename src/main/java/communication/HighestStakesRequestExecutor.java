@@ -2,7 +2,6 @@ package communication;
 
 import model.Stake;
 import service.AllServices;
-import service.BetOffersService;
 
 import java.net.HttpURLConnection;
 import java.util.List;
@@ -12,7 +11,7 @@ public class HighestStakesRequestExecutor implements RequestExecutor {
 
     private final int betOfferId;
 
-    public HighestStakesRequestExecutor(int betOfferId) {
+    HighestStakesRequestExecutor(int betOfferId) {
         this.betOfferId = betOfferId;
     }
 

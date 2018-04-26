@@ -5,7 +5,7 @@ public class Response {
     private final String body;
     private final int httpResponseCode;
 
-    public Response(String body, int httpResponseCode) {
+    Response(String body, int httpResponseCode) {
 
         this.body = body;
         this.httpResponseCode = httpResponseCode;

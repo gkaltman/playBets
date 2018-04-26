@@ -2,7 +2,6 @@ package model;
 
 import util.StringUtil;
 
-import java.sql.Time;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 

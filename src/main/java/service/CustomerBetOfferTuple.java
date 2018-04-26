@@ -7,7 +7,7 @@ public class CustomerBetOfferTuple {
     private final int customerId;
     private final int betOfferId;
 
-    public CustomerBetOfferTuple(int customerId, int betOfferId) {
+    CustomerBetOfferTuple(int customerId, int betOfferId) {
         this.customerId = customerId;
         this.betOfferId = betOfferId;
     }

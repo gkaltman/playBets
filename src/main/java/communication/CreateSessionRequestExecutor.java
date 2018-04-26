@@ -1,7 +1,6 @@
 package communication;
 
 import service.AllServices;
-import service.CustomerSessionService;
 
 import java.net.HttpURLConnection;
 
@@ -9,7 +8,7 @@ public class CreateSessionRequestExecutor implements RequestExecutor {
 
     private final int customerId;
 
-    public CreateSessionRequestExecutor(int customerId) {
+    CreateSessionRequestExecutor(int customerId) {
 
         this.customerId = customerId;
     }

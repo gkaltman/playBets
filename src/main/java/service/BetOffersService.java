@@ -4,8 +4,6 @@ import model.Stake;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Handles the stakes posted by customers for bet offers.
